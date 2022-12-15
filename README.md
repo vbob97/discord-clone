@@ -2,6 +2,7 @@
 
 ## If you want try:
 for install all the dependences
+
     npm install
 
 create a file called "firebase.js" with your config and this line of code:
