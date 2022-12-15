@@ -9,13 +9,13 @@ import HelpRoundedIcon from '@mui/icons-material/HelpRounded';
 import './ChatHeader.css'
 
 
-function ChatHeader() {
+function ChatHeader({channelName}) {
   return (
     <div className='chanHeader'>
        <div className='chatHeader__left'>
             <h3>
                 <span className='chatHeader__hash'>#</span>
-                Ciling
+                {channelName}
             </h3>
        </div>
 

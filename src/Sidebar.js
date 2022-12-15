@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect,useState} from 'react'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
 import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
@@ -9,16 +9,37 @@ import MicIcon from '@mui/icons-material/Mic';
 import HeadsetIcon from '@mui/icons-material/Headset';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useSelector } from 'react-redux'; 
+import {  onSnapshot, collection, addDoc } from "firebase/firestore";
 
 import './Sidebar.css'
 import SidebarChannel from './SidebarChannel';
 import { selectUser } from './features/userSlice';
-import { auth } from './firebase';
+import db, { auth } from './firebase';
 
 
 
 function  Sidebar() {
   const user= useSelector(selectUser);
+  const [channels,setChannels] = useState([]);
+
+  useEffect(() => {
+  onSnapshot(collection(db,'channels'),(snapshot)=>{
+    setChannels(
+    snapshot.docs.map(
+      (doc) =>({
+        id: doc.id,
+        channel: doc.data(),
+      })))
+   });
+  }, [])
+  const handleAddChannel = () =>{
+    const channelName = prompt("Enter a new Channel Name");
+
+    if (channelName){
+      addDoc(collection(db,'channels'),{channelName: channelName})
+      
+    }
+  }
   return (
     <div className='sidebar'>
        <div className='sidebar__top'>
@@ -31,13 +52,17 @@ function  Sidebar() {
             <ExpandMoreIcon />
             <h4>Text Channels</h4>
           </div>
-            <AddIcon className='sidebar__addChannel' />
+            <AddIcon onClick={handleAddChannel} className='sidebar__addChannel' />
         </div>
       </div>  
         <div className='sidebar__channelsList'>
-          <SidebarChannel  />
-          <SidebarChannel />
-          <SidebarChannel />
+         {channels.map(({id,channel})=>(
+           <SidebarChannel 
+           key={id} 
+           id={id}
+           channelName={channel.channelName}
+           />
+         ))}
         </div>
         
       <div className='sidebar__voice'>
